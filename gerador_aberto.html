@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Descrições Femininas V2.1</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #0B4F6C 0%, #0A3D5C 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #0B4F6C 0%, #0A3D5C 100%); color: white; padding: 30px; text-align: center; }
+        .header h1 { font-size: 28px; margin-bottom: 10px; }
+        .header p { opacity: 0.9; font-size: 14px; }
+        .form-section { padding: 30px; }
+        .category-title { font-size: 16px; font-weight: 700; color: #0B4F6C; margin: 25px 0 15px 0; padding-bottom: 8px; border-bottom: 2px solid #e0e0e0; text-transform: uppercase; letter-spacing: 1px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        label { font-weight: 600; color: #333; margin-bottom: 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        select, input { padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; transition: border-color 0.3s; background: #fafafa; cursor: pointer; width: 100%; }
+        select:focus, input:focus { outline: none; border-color: #0B4F6C; background: white; }
+        .btn-gerar { width: 100%; padding: 18px; background: linear-gradient(135deg, #0B4F6C 0%, #0A3D5C 100%); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; }
+        .btn-gerar:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(11, 79, 108, 0.4); }
+        .resultado-section { padding: 0 30px 30px 30px; display: none; }
+        .resultado-section.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .resultado-box { background: #f8f9fa; border-left: 5px solid #0B4F6C; border-radius: 12px; padding: 25px; margin-bottom: 15px; }
+        .resultado-box h3 { color: #0B4F6C; margin-bottom: 15px; font-size: 16px; }
+        .descricao-texto { font-size: 16px; line-height: 1.8; color: #333; font-style: italic; }
+        .btn-copiar { width: 100%; padding: 14px; background: #28a745; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        .btn-copiar:hover { background: #218838; }
+        .btn-copiar.copiado { background: #17a2b8; }
+        .footer { text-align: center; padding: 20px; background: #f8f9fa; color: #888; font-size: 12px; }
+        .aleatorio-section { padding: 0 30px 20px 30px; text-align: center; }
+        .btn-aleatorio { padding: 12px 25px; background: #ff6b6b; color: white; border: none; border-radius: 25px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .btn-aleatorio:hover { transform: scale(1.05); }
+        .btn-limpar { padding: 12px 25px; background: #6c757d; color: white; border: none; border-radius: 25px; font-size: 14px; font-weight: 600; cursor: pointer; margin-left: 10px; }
+
+        /* LOGIN */
+        .login-box { background: white; border-radius: 20px; padding: 40px; max-width: 400px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; }
+        .login-box h2 { color: #0B4F6C; margin-bottom: 10px; font-size: 24px; }
+        .login-box p { color: #666; margin-bottom: 25px; font-size: 14px; }
+        .login-input { margin-bottom: 15px; text-align: left; }
+        .login-input label { display: block; margin-bottom: 5px; font-size: 12px; color: #555; }
+        .btn-login { width: 100%; padding: 14px; background: linear-gradient(135deg, #0B4F6C 0%, #0A3D5C 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 10px; }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(11, 79, 108, 0.3); }
+        .user-info { position: fixed; top: 15px; right: 15px; background: white; padding: 10px 20px; border-radius: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px; z-index: 1000; font-size: 14px; }
+        #appScreen { display: block; }
+        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .login-box { padding: 25px; } }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <!-- APP -->
+    <div id="appScreen">
+        <div class="container">
+            <div class="header">
+                <h1>📝 Gerador de Descricoes Femininas V2.1</h1>
+                <p>Descricoes detalhadas com etnia, corpo, expressao, cabelo, olhos e mais</p>
+            </div>
+
+            <div class="form-section">
+                <div class="category-title">👤 Identidade</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Etnia</label>
+                        <select id="etnia">
+                            <option value="hispanica">Hispanica</option>
+                            <option value="asiatica">Asiatica</option>
+                            <option value="negra">Negra</option>
+                            <option value="branca">Branca</option>
+                            <option value="arabe">Arabe</option>
+                            <option value="indiana">Indiana</option>
+                            <option value="mestica">Mestica</option>
+                            <option value="latina">Latina</option>
+                            <option value="mulata">Mulata</option>
+                            <option value="oriental media">Oriental Media</option>
+                            <option value="nordica">Nordica</option>
+                            <option value="eslava">Eslava</option>
+                            <option value="africana">Africana</option>
+                            <option value="caribenha">Caribenha</option>
+                            <option value="brasileira">Brasileira</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Idade</label>
+                        <select id="idade">
+                            <option>18</option><option>19</option><option>20</option><option>21</option>
+                            <option>22</option><option>23</option><option>24</option><option>25</option>
+                            <option>26</option><option>27</option><option>28</option><option>29</option>
+                            <option>30</option><option>31</option><option>32</option><option>33</option>
+                            <option>34</option><option>35</option><option>36</option><option>37</option>
+                            <option>38</option><option>39</option><option>40</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="category-title">💃 Tipo de Corpo</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Tipo de Corpo</label>
+                        <select id="corpo">
+                            <option value="slim">Slim (Magro elegante)</option>
+                            <option value="fit">Fit (Atletico)</option>
+                            <option value="curvy">Curvy (Curvilineo)</option>
+                            <option value="voluptuous">Voluptuous (Voluptuoso)</option>
+                            <option value="buxom">Buxom (Seios grandes)</option>
+                            <option value="petite">Petite (Pequeno e delicado)</option>
+                            <option value="tall">Tall (Alto)</option>
+                            <option value="skinny">Skinny (Muito magro)</option>
+                            <option value="chubby">Chubby (Levemente cheio)</option>
+                            <option value="plump">Plump (Cheinho)</option>
+                            <option value="thick">Thick (Coxas grossas, quadril largo)</option>
+                            <option value="muscular">Muscular (Musculoso)</option>
+                            <option value="buff">Buff (Musculoso definido)</option>
+                            <option value="lanky">Lanky (Alto e magro)</option>
+                            <option value="tiny">Tiny (Miudo e pequeno)</option>
+                            <option value="well-built">Well-built (Bem construido)</option>
+                            <option value="well-endowed">Well-endowed (Bem dotado)</option>
+                            <option value="flyweight">Flyweight (Muito leve)</option>
+                            <option value="midweight">Midweight (Medio)</option>
+                            <option value="large">Large (Grande)</option>
+                            <option value="stocky">Stocky (Atarracado)</option>
+                            <option value="stout">Stout (Forte e baixo)</option>
+                            <option value="rotund">Rotund (Redondo)</option>
+                            <option value="portly">Portly (Robusto)</option>
+                            <option value="hefty">Hefty (Robusto e pesado)</option>
+                            <option value="beefy">Beefy (Forte e carnudo)</option>
+                            <option value="overweight">Overweight (Acima do peso)</option>
+                            <option value="obese">Obese (Obeso)</option>
+                            <option value="morbidly obese">Morbidly Obese (Obesidade extrema)</option>
+                            <option value="underweight">Underweight (Abaixo do peso)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Altura / Estrutura</label>
+                        <select id="altura">
+                            <option value="">(Nao especificar)</option>
+                            <option value="baixa estatura">Baixa estatura</option>
+                            <option value="estatura media">Estatura media</option>
+                            <option value="alta estatura">Alta estatura</option>
+                            <option value="muito alta">Muito alta</option>
+                            <option value="estatura pequena e delicada">Pequena e delicada</option>
+                            <option value="estatura imponente">Estatura imponente</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="category-title">😊 Rosto</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Formato do Rosto</label>
+                        <select id="rosto">
+                            <option value="oval">Oval</option>
+                            <option value="redondo">Redondo</option>
+                            <option value="coracao">Coracao</option>
+                            <option value="coracao com queixo pontudo">Coracao com queixo pontudo</option>
+                            <option value="coracao com queixo arredondado">Coracao com queixo arredondado</option>
+                            <option value="coracao com queixo em V">Coracao com queixo em V</option>
+                            <option value="diamante">Diamante</option>
+                            <option value="quadrado">Quadrado</option>
+                            <option value="quadrado com maxilar arredondado">Quadrado com maxilar arredondado</option>
+                            <option value="quadrado com maxilar marcado">Quadrado com maxilar marcado</option>
+                            <option value="quadrado com maxilar suave">Quadrado com maxilar suave</option>
+                            <option value="retangular">Retangular</option>
+                            <option value="triangular">Triangular</option>
+                            <option value="triangulo invertido">Triangulo Invertido</option>
+                            <option value="pera">Pera</option>
+                            <option value="oblongo">Oblongo</option>
+                            <option value="longo">Longo</option>
+                            <option value="quadrado ovalado">Quadrado Ovalado</option>
+                            <option value="redondo quadrado">Redondo Quadrado</option>
+                            <option value="redondo com macas definidas">Redondo com macas definidas</option>
+                            <option value="redondo com macas altas">Redondo com macas altas</option>
+                            <option value="redondo com macas suaves">Redondo com macas suaves</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tracos</label>
+                        <select id="tracos">
+                            <option value="suaves">Suaves</option>
+                            <option value="marcados">Marcados</option>
+                            <option value="delicados">Delicados</option>
+                            <option value="elegantes">Elegantes</option>
+                            <option value="finos">Finos</option>
+                            <option value="expressivos">Expressivos</option>
+                            <option value="harmoniosos">Harmoniosos</option>
+                            <option value="fortes">Fortes</option>
+                            <option value="angulares">Angulares</option>
+                            <option value="arredondados">Arredondados</option>
+                            <option value="simetricos">Simetricos</option>
+                            <option value="exoticos">Exoticos</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="category-title">😃 Expressao Facial</div>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>Expressao</label>
+                        <select id="expressao">
+                            <option value="">(Neutra - nao especificar)</option>
+                            <option value="sorridente">Sorridente</option>
+                            <option value="feliz">Feliz</option>
+                            <option value="apaixonada">Apaixonada</option>
+                            <option value="serena">Serena</option>
+                            <option value="calma">Calma</option>
+                            <option value="pacifica">Pacifica</option>
+                            <option value="contente">Contente</option>
+                            <option value="pensativa">Pensativa</option>
+                            <option value="curiosa">Curiosa</option>
+                            <option value="timida">Timida</option>
+                            <option value="animada">Animada</option>
+                            <option value="divertida">Divertida</option>
+                            <option value="surpresa">Surpresa</option>
+                            <option value="surpresa e divertida">Surpresa e Divertida</option>
+                            <option value="seria">Seria</option>
+                            <option value="confiante">Confiante</option>
+                            <option value="orgulhosa">Orgulhosa</option>
+                            <option value="sedutora">Sedutora</option>
+                            <option value="misteriosa">Misteriosa</option>
+                            <option value="raiva">Raiva</option>
+                            <option value="triste">Triste</option>
+                            <option value="entediada">Entediada</option>
+                            <option value="ansiosa">Ansiosa</option>
+                            <option value="nervosa">Nervosa</option>
+                            <option value="cautelosa">Cautelosa</option>
+                            <option value="confusa">Confusa</option>
+                            <option value="decepcionada">Decepcionada</option>
+                            <option value="com nojo">Com nojo</option>
+                            <option value="invejosa">Invejosa</option>
+                            <option value="medrosa">Medrosa</option>
+                            <option value="sarcastica">Sarcastica</option>
+                            <option value="bobinha">Bobinha</option>
+                            <option value="desprezivel">Desprezivel</option>
+                            <option value="aliviada">Aliviada</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="category-title">✨ Pele</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Tom da Pele</label>
+                        <select id="pele">
+                            <option value="branca clara">Branca Clara</option>
+                            <option value="branca">Branca</option>
+                            <option value="morena clara">Morena Clara</option>
+                            <option value="morena">Morena</option>
+                            <option value="morena escura">Morena Escura</option>
+                            <option value="negra">Negra</option>
+                            <option value="palida">Palida</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Detalhe da Pele</label>
+                        <select id="pele_detalhe">
+                            <option value="leve tom rosado">Leve Tom Rosado</option>
+                            <option value="luminosidade natural">Luminosidade Natural</option>
+                            <option value="brilho saudavel">Brilho Saudavel</option>
+                            <option value="textura aveludada">Textura Aveludada</option>
+                            <option value="matte uniforme">Matte Uniforme</option>
+                            <option value="leve sardas">Leve Sardas</option>
+                            <option value="porcelana lisa">Porcelana Lisa</option>
+                            <option value="brilho dourado">Brilho Dourado</option>
+                            <option value="translucida">Translucida</option>
+                            <option value="perfeita">Perfeita</option>
+                            <option value="suave">Suave</option>
+                            <option value="radiante">Radiante</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="category-title">👁️ Olhos</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Cor dos Olhos</label>
+                        <select id="olhos_cor">
+                            <option value="castanhos escuros">Castanhos Escuros</option>
+                            <option value="castanhos claros">Castanhos Claros</option>
+                            <option value="pretos">Pretos</option>
+                            <option value="azuis">Azuis</option>
+                            <option value="azuis claros">Azuis Claros</option>
+                            <option value="azuis profundos">Azuis Profundos</option>
+                            <option value="azuis gelo">Azuis Gelo</option>
+                            <option value="verdes">Verdes</option>
+                            <option value="verdes esmeralda">Verdes Esmeralda</option>
+                            <option value="verdes jade">Verdes Jade</option>
+                            <option value="verdes oliva">Verdes Oliva</option>
+                            <option value="avela">Avela</option>
+                            <option value="cinzas">Cinzas</option>
+                            <option value="cinzas aco">Cinzas Aco</option>
+                            <option value="cinzas azulados">Cinzas Azulados</option>
+                            <option value="ambar">Ambar</option>
+                            <option value="mel">Mel</option>
+                            <option value="dourados">Dourados</option>
+                            <option value="violeta">Violeta</option>
+                            <option value="roxo lavanda">Roxo Lavanda</option>
+                            <option value="ametista">Ametista</option>
+                            <option value="vermelhos">Vermelhos</option>
+                            <option value="rubis">Rubis</option>
+                            <option value="vinho">Vinho</option>
+                            <option value="albinos">Albinos</option>
+                            <option value="castanho-esverdeados">Castanho-Esverdeados</option>
+                            <option value="heterocromia">Heterocromia</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Formato dos Olhos</label>
+                        <select id="olhos_formato">
+                            <option value="amendoados">Amendoados</option>
+                            <option value="redondos">Redondos</option>
+                            <option value="alongados">Alongados</option>
+                            <option value="grandes">Grandes</option>
+                            <option value="pequenos">Pequenos</option>
+                            <option value="caidos">Caidos</option>
+                            <option value="saltados">Saltados</option>
+                            <option value="felinos">Felinos</option>
+                            <option value="de corca">De Corca</option>
+                            <option value="orientais">Orientais</option>
+                            <option value="expressivos">Expressivos</option>
+                            <option value="profundos">Profundos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Sobrancelhas</label>
+                        <select id="sobrancelhas">
+                            <option value="bem arqueadas e preenchidas">Bem Arqueadas e Preenchidas</option>
+                            <option value="finas e arqueadas">Finas e Arqueadas</option>
+                            <option value="retas e naturais">Retas e Naturais</option>
+                            <option value="espessas e marcadas">Espessas e Marcadas</option>
+                            <option value="arqueadas suavemente">Arqueadas Suavemente</option>
+                            <option value="desenhadas e perfeitas">Desenhadas e Perfeitas</option>
+                            <option value="sulamiticas">Sulamiticas</option>
+                            <option value="arqueadas altas">Arqueadas Altas</option>
+                            <option value="retas grossas">Retas Grossas</option>
+                            <option value="em leque">Em Leque</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Cor das Sobrancelhas</label>
+                        <select id="sobrancelhas_cor">
+                            <option value="escura">Escura</option>
+                            <option value="preta">Preta</option>
+                            <option value="castanha">Castanha</option>
+                            <option value="castanho-clara">Castanho-Clara</option>
+                            <option value="loira">Loira</option>
+                            <option value="ruiva">Ruiva</option>
+                            <option value="cinza">Cinza</option>
+                            <option value="branca">Branca</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="category-title">👃 Nariz e Labios</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Nariz</label>
+                        <select id="nariz">
+                            <option value="fino e retilineo">Fino e Retilineo</option>
+                            <option value="pequeno e delicado">Pequeno e Delicado</option>
+                            <option value="pequeno e arrebitado">Pequeno e Arrebitado</option>
+                            <option value="medio e harmonioso">Medio e Harmonioso</option>
+                            <option value="largo e forte">Largo e Forte</option>
+                            <option value="grego e reto">Grego e Reto</option>
+                            <option value="afinado e elegante">Afinado e Elegante</option>
+                            <option value="arrebitado">Arrebitado</option>
+                            <option value="largo">Largo</option>
+                            <option value="aquilino">Aquilino</option>
+                            <option value="botao">Botao</option>
+                            <option value="romano">Romano</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Labios</label>
+                        <select id="labios">
+                            <option value="carnosos">Carnosos</option>
+                            <option value="finos">Finos</option>
+                            <option value="medios">Medios</option>
+                            <option value="simetricos">Simetricos</option>
+                            <option value="volumosos">Volumosos</option>
+                            <option value="delicados">Delicados</option>
+                            <option value="rosados naturais">Rosados Naturais</option>
+                            <option value="em arco de cupido">Em Arco de Cupido</option>
+                            <option value="inferior volumoso">Inferior Volumoso</option>
+                            <option value="superior fino">Superior Fino</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Detalhe dos Labios</label>
+                        <select id="labios_detalhe">
+                            <option value="levemente volumosos">Levemente Volumosos</option>
+                            <option value="delicadamente contornados">Delicadamente Contornados</option>
+                            <option value="simetricamente desenhados">Simetricamente Desenhados</option>
+                            <option value="naturalmente rosados">Naturalmente Rosados</option>
+                            <option value="suavemente curvados">Suavemente Curvados</option>
+                            <option value="perfeitamente simetricos">Perfeitamente Simetricos</option>
+                            <option value="com linha definida">Com Linha Definida</option>
+                            <option value="brilhantes">Brilhantes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Maquiagem / Cor dos Labios</label>
+                        <select id="maquiagem">
+                            <option value="batom vermelho-vivo brilhante">Batom Vermelho-Vivo Brilhante</option>
+                            <option value="gloss vermelho-vivo brilhante">Gloss Vermelho-Vivo Brilhante</option>
+                            <option value="batom nude matte">Batom Nude Matte</option>
+                            <option value="gloss rosa brilhante">Gloss Rosa Brilhante</option>
+                            <option value="batom vinho intenso">Batom Vinho Intenso</option>
+                            <option value="gloss coral luminoso">Gloss Coral Luminoso</option>
+                            <option value="batom rosa antigo">Batom Rosa Antigo</option>
+                            <option value="gloss transparente brilhante">Gloss Transparente Brilhante</option>
+                            <option value="batom pessego suave">Batom Pessego Suave</option>
+                            <option value="gloss berry profundo">Gloss Berry Profundo</option>
+                            <option value="batom preto">Batom Preto</option>
+                            <option value="batom azul">Batom Azul</option>
+                            <option value="batom marrom">Batom Marrom</option>
+                            <option value="batom borgonha">Batom Borgonha</option>
+                            <option value="batom coral">Batom Coral</option>
+                            <option value="batom laranja">Batom Laranja</option>
+                            <option value="batom amarelo">Batom Amarelo</option>
+                            <option value="batom roxo">Batom Roxo</option>
+                            <option value="batom mauve">Batom Mauve</option>
+                            <option value="batom plum">Batom Plum</option>
+                            <option value="gloss nude">Gloss Nude</option>
+                            <option value="gloss mel">Gloss Mel</option>
+                            <option value="sem maquiagem">Sem Maquiagem</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="category-title">💇 Cabelo</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Estilo / Corte</label>
+                        <select id="cabelo_estilo">
+                            <option value="solto">Solto Natural</option>
+                            <option value="bob">Bob</option>
+                            <option value="long bob">Long Bob</option>
+                            <option value="bob frances">Bob Frances</option>
+                            <option value="bob italiano">Bob Italiano</option>
+                            <option value="bob cacheado">Bob Cacheado</option>
+                            <option value="bob reto">Bob Reto</option>
+                            <option value="bob em A">Bob em A</option>
+                            <option value="pixie">Pixie</option>
+                            <option value="pixie longo">Pixie Longo</option>
+                            <option value="pixie cacheado">Pixie Cacheado</option>
+                            <option value="pixie com franja lateral">Pixie com Franja Lateral</option>
+                            <option value="undercut">Undercut</option>
+                            <option value="moicano">Moicano</option>
+                            <option value="falso moicano">Falso Moicano</option>
+                            <option value="falso moicano pixie">Falso Moicano Pixie</option>
+                            <option value="afro">Afro</option>
+                            <option value="afro com fade">Afro com Fade</option>
+                            <option value="afro cacheado solto">Afro Cacheado Solto</option>
+                            <option value="frophawk">Frophawk</option>
+                            <option value="dreadlocks">Dreadlocks</option>
+                            <option value="box braids">Box Braids</option>
+                            <option value="micro braids">Micro Braids</option>
+                            <option value="cornrows">Cornrows</option>
+                            <option value="cornrows complexas">Cornrows Complexas</option>
+                            <option value="lemonade braids">Lemonade Braids</option>
+                            <option value="stitch braids">Stitch Braids</option>
+                            <option value="tranca rabo de peixe">Tranca Rabo de Peixe</option>
+                            <option value="trancas francesas">Trancas Francesas</option>
+                            <option value="trancas holandesas">Trancas Holandesas</option>
+                            <option value="tranca lateral">Tranca Lateral</option>
+                            <option value="duas trancas">Duas Trancas</option>
+                            <option value="rabo de cavalo alto">Rabo de Cavalo Alto</option>
+                            <option value="rabo de cavalo longo">Rabo de Cavalo Longo</option>
+                            <option value="rabo de cavalo medio">Rabo de Cavalo Medio</option>
+                            <option value="rabo de cavalo com reparticao">Rabo com Reparticao</option>
+                            <option value="coque alto">Coque Alto</option>
+                            <option value="coque de bailarina">Coque de Bailarina</option>
+                            <option value="coque chignon">Coque Chignon</option>
+                            <option value="coque frances">Coque Frances</option>
+                            <option value="coque beehive">Coque Beehive</option>
+                            <option value="dois coques">Dois Coques</option>
+                            <option value="corte cesar">Corte Cesar</option>
+                            <option value="corte crew">Corte Crew</option>
+                            <option value="corte buzz">Corte Buzz</option>
+                            <option value="careca">Careca</option>
+                            <option value="careca feminina">Careca Feminina</option>
+                            <option value="fade alto">Fade Alto</option>
+                            <option value="fade com ondas">Fade com Ondas</option>
+                            <option value="fade com cachos">Fade com Cachos</option>
+                            <option value="flat top">Flat Top</option>
+                            <option value="pompadour">Pompadour</option>
+                            <option value="quiff">Quiff</option>
+                            <option value="corte em camadas">Corte em Camadas</option>
+                            <option value="corte desfiado">Corte Desfiado</option>
+                            <option value="corte desconstruido">Corte Desconstruido</option>
+                            <option value="corte blunt">Corte Blunt</option>
+                            <option value="corte tigela">Corte Tigela</option>
+                            <option value="corte assimetrico">Corte Assimetrico</option>
+                            <option value="corte shag">Corte Shag</option>
+                            <option value="corte em degrade">Corte em Degrade</option>
+                            <option value="franja">Com Franja</option>
+                            <option value="franja cortina">Franja Cortina</option>
+                            <option value="franja reta">Franja Reta</option>
+                            <option value="franja lateral">Franja Lateral</option>
+                            <option value="reparticao profunda">Reparticao Profunda</option>
+                            <option value="balayage">Balayage</option>
+                            <option value="cabelo espetado">Cabelo Espetado</option>
+                            <option value="cabelo espetado descolorido">Espetado Descolorido</option>
+                            <option value="cabelo volumoso">Cabelo Volumoso</option>
+                            <option value="cabelo nuvem">Cabelo Nuvem</option>
+                            <option value="ondas sereia">Ondas Sereia</option>
+                            <option value="cachos em caracois">Cachos em Caracois</option>
+                            <option value="cachos curtos baguncados">Cachos Curtos Baguncados</option>
+                            <option value="cachos empilhados">Cachos Empilhados</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Comprimento</label>
+                        <select id="cabelo_comprimento">
+                            <option value="muito longo">Muito Longo</option>
+                            <option value="longo">Longo</option>
+                            <option value="medio">Medio</option>
+                            <option value="curto">Curto</option>
+                            <option value="muito curto">Muito Curto</option>
+                            <option value="careca">Careca</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Textura</label>
+                        <select id="cabelo_textura">
+                            <option value="liso">Liso</option>
+                            <option value="liso sedoso">Liso Sedoso</option>
+                            <option value="ondulado">Ondulado</option>
+                            <option value="ondulado solto">Ondulado Solto</option>
+                            <option value="ondulado definido">Ondulado Definido</option>
+                            <option value="cacheado">Cacheado</option>
+                            <option value="crespo">Crespo</option>
+                            <option value="encaracolado">Encaracolado</option>
+                            <option value="caracois definidos">Caracois Definidos</option>
+                            <option value="afro">Afro</option>
+                            <option value="com frizz">Com Frizz</option>
+                            <option value="desfiado">Desfiado</option>
+                            <option value="texturizado">Texturizado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Volume</label>
+                        <select id="cabelo_volume">
+                            <option value="volumoso">Volumoso</option>
+                            <option value="leve">Leve</option>
+                            <option value="denso">Denso</option>
+                            <option value="natural">Natural</option>
+                            <option value="abundante">Abundante</option>
+                            <option value="controlado">Controlado</option>
+                            <option value="cheio">Cheio</option>
+                            <option value="extremo">Extremo</option>
+                            <option value="baguncado">Baguncado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Cor do Cabelo</label>
+                        <select id="cabelo_cor">
+                            <option value="castanho-escuro">Castanho-Escuro</option>
+                            <option value="castanho claro">Castanho Claro</option>
+                            <option value="castanho medio">Castanho Medio</option>
+                            <option value="loiro">Loiro</option>
+                            <option value="loiro dourado">Loiro Dourado</option>
+                            <option value="loiro platinado">Loiro Platinado</option>
+                            <option value="loiro sujo">Loiro Sujo</option>
+                            <option value="loiro morango">Loiro Morango</option>
+                            <option value="ruivo">Ruivo</option>
+                            <option value="ruivo acobreado">Ruivo Acobreado</option>
+                            <option value="ruivo intenso">Ruivo Intenso</option>
+                            <option value="auburn">Auburn</option>
+                            <option value="preto">Preto</option>
+                            <option value="preto azulado">Preto Azulado</option>
+                            <option value="grisalho">Grisalho</option>
+                            <option value="prateado">Prateado</option>
+                            <option value="branco">Branco</option>
+                            <option value="sal e pimenta">Sal e Pimenta</option>
+                            <option value="vinho">Vinho</option>
+                            <option value="mogno">Mogno</option>
+                            <option value="pastel">Pastel</option>
+                            <option value="multicor">Multicor</option>
+                            <option value="rosa">Rosa</option>
+                            <option value="azul">Azul</option>
+                            <option value="roxo">Roxo</option>
+                            <option value="verde">Verde</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Brilho / Acabamento</label>
+                        <select id="cabelo_brilho">
+                            <option value="brilhante">Brilhante e Saudavel</option>
+                            <option value="natural">Natural</option>
+                            <option value="mate">Mate</option>
+                            <option value="oleoso">Oleoso</option>
+                            <option value="seco">Seco</option>
+                            <option value="molhado">Molhado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-gerar" onclick="gerarDescricao()">GERAR DESCRICAO</button>
+            </div>
+
+            <div class="aleatorio-section">
+                <button class="btn-aleatorio" onclick="preencherAleatorio()">Preencher Aleatorio</button>
+                <button class="btn-limpar" onclick="limparTudo()">Limpar Tudo</button>
+            </div>
+
+            <div class="resultado-section" id="resultadoSection">
+                <div class="resultado-box">
+                    <h3>Descricao Gerada:</h3>
+                    <p class="descricao-texto" id="descricaoTexto"></p>
+                </div>
+                <button class="btn-copiar" id="btnCopiar" onclick="copiarTexto()">COPIAR TEXTO</button>
+            </div>
+
+            <div class="footer">
+                <p>Gerador de Descricoes Femininas V2.1</p>
+            </div>
+        </div>
+    </div>
+
+            <script>
+        // GERADOR
+        const dados = {
+            etnia: ["hispanica","asiatica","negra","branca","arabe","indiana","mestica","latina","mulata","oriental media","nordica","eslava","africana","caribenha","brasileira"],
+            idade: ["18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40"],
+            corpo: ["slim","fit","curvy","voluptuous","buxom","petite","tall","skinny","chubby","plump","thick","muscular","buff","lanky","tiny","well-built","well-endowed","flyweight","midweight","large","stocky","stout","rotund","portly","hefty","beefy","overweight","obese","morbidly obese","underweight"],
+            altura: ["","baixa estatura","estatura media","alta estatura","muito alta","estatura pequena e delicada","estatura imponente"],
+            rosto: ["oval","redondo","coracao","coracao com queixo pontudo","coracao com queixo arredondado","coracao com queixo em V","diamante","quadrado","quadrado com maxilar arredondado","quadrado com maxilar marcado","quadrado com maxilar suave","retangular","triangular","triangulo invertido","pera","oblongo","longo","quadrado ovalado","redondo quadrado","redondo com macas definidas","redondo com macas altas","redondo com macas suaves"],
+            tracos: ["suaves","marcados","delicados","elegantes","finos","expressivos","harmoniosos","fortes","angulares","arredondados","simetricos","exoticos"],
+            expressao: ["","sorridente","feliz","apaixonada","serena","calma","pacifica","contente","pensativa","curiosa","timida","animada","divertida","surpresa","surpresa e divertida","seria","confiante","orgulhosa","sedutora","misteriosa","raiva","triste","entediada","ansiosa","nervosa","cautelosa","confusa","decepcionada","com nojo","invejosa","medrosa","sarcastica","bobinha","desprezivel","aliviada"],
+            pele: ["branca clara","branca","morena clara","morena","morena escura","negra","palida"],
+            pele_detalhe: ["leve tom rosado","luminosidade natural","brilho saudavel","textura aveludada","matte uniforme","leve sardas","porcelana lisa","brilho dourado","translucida","perfeita","suave","radiante"],
+            olhos_cor: ["castanhos escuros","castanhos claros","pretos","azuis","azuis claros","azuis profundos","azuis gelo","verdes","verdes esmeralda","verdes jade","verdes oliva","avela","cinzas","cinzas aco","cinzas azulados","ambar","mel","dourados","violeta","roxo lavanda","ametista","vermelhos","rubis","vinho","albinos","castanho-esverdeados","heterocromia"],
+            olhos_formato: ["amendoados","redondos","alongados","grandes","pequenos","caidos","saltados","felinos","de corca","orientais","expressivos","profundos"],
+            sobrancelhas: ["bem arqueadas e preenchidas","finas e arqueadas","retas e naturais","espessas e marcadas","arqueadas suavemente","desenhadas e perfeitas","sulamiticas","arqueadas altas","retas grossas","em leque"],
+            sobrancelhas_cor: ["escura","preta","castanha","castanho-clara","loira","ruiva","cinza","branca"],
+            nariz: ["fino e retilineo","pequeno e delicado","pequeno e arrebitado","medio e harmonioso","largo e forte","grego e reto","afinado e elegante","arrebitado","largo","aquilino","botao","romano"],
+            labios: ["carnosos","finos","medios","simetricos","volumosos","delicados","rosados naturais","em arco de cupido","inferior volumoso","superior fino"],
+            labios_detalhe: ["levemente volumosos","delicadamente contornados","simetricamente desenhados","naturalmente rosados","suavemente curvados","perfeitamente simetricos","com linha definida","brilhantes"],
+            maquiagem: ["batom vermelho-vivo brilhante","gloss vermelho-vivo brilhante","batom nude matte","gloss rosa brilhante","batom vinho intenso","gloss coral luminoso","batom rosa antigo","gloss transparente brilhante","batom pessego suave","gloss berry profundo","batom preto","batom azul","batom marrom","batom borgonha","batom coral","batom laranja","batom amarelo","batom roxo","batom mauve","batom plum","gloss nude","gloss mel","sem maquiagem"],
+            cabelo_estilo: ["solto","bob","long bob","bob frances","bob italiano","bob cacheado","bob reto","bob em A","pixie","pixie longo","pixie cacheado","pixie com franja lateral","undercut","moicano","falso moicano","falso moicano pixie","afro","afro com fade","afro cacheado solto","frophawk","dreadlocks","box braids","micro braids","cornrows","cornrows complexas","lemonade braids","stitch braids","tranca rabo de peixe","trancas francesas","trancas holandesas","tranca lateral","duas trancas","rabo de cavalo alto","rabo de cavalo longo","rabo de cavalo medio","rabo de cavalo com reparticao","coque alto","coque de bailarina","coque chignon","coque frances","coque beehive","dois coques","corte cesar","corte crew","corte buzz","careca","careca feminina","fade alto","fade com ondas","fade com cachos","flat top","pompadour","quiff","corte em camadas","corte desfiado","corte desconstruido","corte blunt","corte tigela","corte assimetrico","corte shag","corte em degrade","franja","franja cortina","franja reta","franja lateral","reparticao profunda","balayage","cabelo espetado","cabelo espetado descolorido","cabelo volumoso","cabelo nuvem","ondas sereia","cachos em caracois","cachos curtos baguncados","cachos empilhados"],
+            cabelo_comprimento: ["muito longo","longo","medio","curto","muito curto","careca"],
+            cabelo_textura: ["liso","liso sedoso","ondulado","ondulado solto","ondulado definido","cacheado","crespo","encaracolado","caracois definidos","afro","com frizz","desfiado","texturizado"],
+            cabelo_volume: ["volumoso","leve","denso","natural","abundante","controlado","cheio","extremo","baguncado"],
+            cabelo_cor: ["castanho-escuro","castanho claro","castanho medio","loiro","loiro dourado","loiro platinado","loiro sujo","loiro morango","ruivo","ruivo acobreado","ruivo intenso","auburn","preto","preto azulado","grisalho","prateado","branco","sal e pimenta","vinho","mogno","pastel","multicor","rosa","azul","roxo","verde"],
+            cabelo_brilho: ["brilhante","natural","mate","oleoso","seco","molhado"]
+        };
+
+        function gerarDescricao() {
+            const etnia = document.getElementById('etnia').value;
+            const idade = document.getElementById('idade').value;
+            const corpo = document.getElementById('corpo').value;
+            const altura = document.getElementById('altura').value;
+            const rosto = document.getElementById('rosto').value;
+            const tracos = document.getElementById('tracos').value;
+            const expressao = document.getElementById('expressao').value;
+            const pele = document.getElementById('pele').value;
+            const peleDetalhe = document.getElementById('pele_detalhe').value;
+            const olhosCor = document.getElementById('olhos_cor').value;
+            const olhosFormato = document.getElementById('olhos_formato').value;
+            const sobrancelhas = document.getElementById('sobrancelhas').value;
+            const sobrancelhasCor = document.getElementById('sobrancelhas_cor').value;
+            const nariz = document.getElementById('nariz').value;
+            const labios = document.getElementById('labios').value;
+            const labiosDetalhe = document.getElementById('labios_detalhe').value;
+            const maquiagem = document.getElementById('maquiagem').value;
+            const cabeloEstilo = document.getElementById('cabelo_estilo').value;
+            const cabeloComp = document.getElementById('cabelo_comprimento').value;
+            const cabeloText = document.getElementById('cabelo_textura').value;
+            const cabeloVol = document.getElementById('cabelo_volume').value;
+            const cabeloCor = document.getElementById('cabelo_cor').value;
+            const cabeloBrilho = document.getElementById('cabelo_brilho').value;
+
+            let descricao = 'Mulher de etnia ' + etnia + ' de ' + idade + ' anos';
+            if (corpo) { descricao += ', corpo ' + corpo; if (altura) descricao += ' e ' + altura; }
+            descricao += '. Rosto ' + rosto + ' com tracos ' + tracos;
+            if (expressao) descricao += ', expressao ' + expressao;
+            descricao += '. Pele ' + pele + ' com ' + peleDetalhe;
+            descricao += '. Olhos ' + olhosCor + ' e ' + olhosFormato + ', sobrancelhas ' + sobrancelhas + ' de cor ' + sobrancelhasCor;
+            descricao += '. Nariz ' + nariz;
+            descricao += '. Labios ' + labios + ', ' + labiosDetalhe;
+            if (maquiagem !== 'sem maquiagem') descricao += ', pintados com ' + maquiagem;
+            else descricao += ', sem maquiagem, cor natural';
+            descricao += '. Cabelo ' + cabeloComp + ', ' + cabeloText + ', ' + cabeloVol + ' e de cor ' + cabeloCor;
+            if (cabeloEstilo !== 'solto') descricao += ', estilo ' + cabeloEstilo;
+            descricao += ', acabamento ' + cabeloBrilho + '.';
+
+            document.getElementById('descricaoTexto').textContent = descricao;
+            document.getElementById('resultadoSection').classList.add('active');
+            document.getElementById('btnCopiar').textContent = 'COPIAR TEXTO';
+            document.getElementById('btnCopiar').classList.remove('copiado');
+            document.getElementById('resultadoSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function preencherAleatorio() {
+            for (let key in dados) {
+                const select = document.getElementById(key);
+                if (select) { const randomIndex = Math.floor(Math.random() * dados[key].length); select.value = dados[key][randomIndex]; }
+            }
+        }
+
+        function limparTudo() {
+            document.getElementById('etnia').selectedIndex = 0;
+            document.getElementById('idade').selectedIndex = 3;
+            document.getElementById('corpo').selectedIndex = 0;
+            document.getElementById('altura').selectedIndex = 0;
+            document.getElementById('rosto').selectedIndex = 0;
+            document.getElementById('tracos').selectedIndex = 0;
+            document.getElementById('expressao').selectedIndex = 0;
+            document.getElementById('pele').selectedIndex = 0;
+            document.getElementById('pele_detalhe').selectedIndex = 0;
+            document.getElementById('olhos_cor').selectedIndex = 0;
+            document.getElementById('olhos_formato').selectedIndex = 0;
+            document.getElementById('sobrancelhas').selectedIndex = 0;
+            document.getElementById('sobrancelhas_cor').selectedIndex = 0;
+            document.getElementById('nariz').selectedIndex = 0;
+            document.getElementById('labios').selectedIndex = 0;
+            document.getElementById('labios_detalhe').selectedIndex = 0;
+            document.getElementById('maquiagem').selectedIndex = 0;
+            document.getElementById('cabelo_estilo').selectedIndex = 0;
+            document.getElementById('cabelo_comprimento').selectedIndex = 1;
+            document.getElementById('cabelo_textura').selectedIndex = 0;
+            document.getElementById('cabelo_volume').selectedIndex = 0;
+            document.getElementById('cabelo_cor').selectedIndex = 0;
+            document.getElementById('cabelo_brilho').selectedIndex = 0;
+            document.getElementById('resultadoSection').classList.remove('active');
+        }
+
+        function copiarTexto() {
+            const texto = document.getElementById('descricaoTexto').textContent;
+            navigator.clipboard.writeText(texto).then(() => {
+                const btn = document.getElementById('btnCopiar');
+                btn.textContent = 'COPIADO!';
+                btn.classList.add('copiado');
+                setTimeout(() => { btn.textContent = 'COPIAR TEXTO'; btn.classList.remove('copiado'); }, 2000);
+            }).catch(() => {
+                const textArea = document.createElement('textarea');
+                textArea.value = texto;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                const btn = document.getElementById('btnCopiar');
+                btn.textContent = 'COPIADO!';
+                btn.classList.add('copiado');
+            });
+        }
+    </script>
+</body>
+</html>
